@@ -1,27 +1,23 @@
 package sili;
 
-
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final DesktopWebSocketHandler desktopHandler;
-    private final MobileWebSocketHandler mobileHandler;
+    private final DesktopWebSocketHandler desktopWebSocketHandler;
 
-    public WebSocketConfig(DesktopWebSocketHandler desktopHandler,
-                           MobileWebSocketHandler mobileHandler) {
-        this.desktopHandler = desktopHandler;
-        this.mobileHandler = mobileHandler;
+    public WebSocketConfig(DesktopWebSocketHandler desktopWebSocketHandler) {
+        this.desktopWebSocketHandler = desktopWebSocketHandler;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(desktopHandler, "/ws/desktop").setAllowedOrigins("*");
-        registry.addHandler(mobileHandler, "/ws/mobile").setAllowedOrigins("*");
+        // Desktop client connects here:
+        registry.addHandler(desktopWebSocketHandler, "/ws/desktop")
+                .setAllowedOrigins("*"); // or restrict if you prefer
     }
 }

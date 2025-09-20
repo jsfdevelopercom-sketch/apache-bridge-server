@@ -1,3 +1,4 @@
+package sili;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

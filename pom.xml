@@ -59,7 +59,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>Application</mainClass>
+          <mainClass>sili.Application</mainClass>
         </configuration>
       </plugin>
 

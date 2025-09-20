@@ -1,3 +1,4 @@
+package sili;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;

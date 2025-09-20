@@ -1,3 +1,4 @@
+package sili;
 
 
 import org.springframework.context.annotation.Configuration;

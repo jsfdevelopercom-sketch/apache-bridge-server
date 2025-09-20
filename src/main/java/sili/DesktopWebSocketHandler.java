@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,8 +30,13 @@ public class DesktopWebSocketHandler extends TextWebSocketHandler {
         Map<String,String> q = QueryUtil.parse(session.getUri().toString());
         String clientId = q.get("clientId");
         String auth = q.get("auth");
+        
+   
+        auth = URLDecoder.decode(auth, StandardCharsets.UTF_8).trim();
+
+
         if (clientId == null || auth == null || !auth.equals(sharedAuth)) {
-            session.close(CloseStatus.NOT_ACCEPTABLE.withReason("missing or invalid clientId/auth"));
+            session.close(CloseStatus.NOT_ACCEPTABLE.withReason("missing or invalid clientId/auth. ClientId +auth + actualAuth="+ clientId +" , " + auth +" , actual="+ sharedAuth));
             return;
         }
         registry.registerDesktop(clientId, session);

@@ -23,7 +23,12 @@ public class DesktopWebSocketHandler extends TextWebSocketHandler {
     private String expectedToken;
 
     // active desktop sessions keyed by clientId
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    //private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final WebSocketRegistry registry;
+
+    public DesktopWebSocketHandler(WebSocketRegistry registry) {
+        this.registry = registry;
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -54,7 +59,7 @@ public class DesktopWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        sessions.put(clientId, session);
+        registry.registerDesktop(clientId, session);
         session.getAttributes().put("clientId", clientId);
         log.info("WS accepted for clientId='{}'", clientId);
     }
@@ -70,7 +75,8 @@ public class DesktopWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String clientId = (String) session.getAttributes().get("clientId");
         if (clientId != null) {
-            sessions.remove(clientId);
+        	registry.unregisterDesktop(session);
+           // sessions.remove(clientId);
             log.info("WS closed for clientId='{}': {}", clientId, status);
         } else {
             log.info("WS closed (no clientId): {}", status);
@@ -122,7 +128,7 @@ public class DesktopWebSocketHandler extends TextWebSocketHandler {
 
     // Expose a way to push to a connected desktop (by clientId)
     public boolean sendToDesktop(String clientId, String json) {
-        WebSocketSession s = sessions.get(clientId);
+        WebSocketSession s = registry.getDesktop(clientId);
         if (s == null || !s.isOpen()) return false;
         try {
             s.sendMessage(new TextMessage(json));
